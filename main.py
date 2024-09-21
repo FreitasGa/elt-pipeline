@@ -86,13 +86,13 @@ def query_heaviest_pokemon_by_imc_category(connection: sqlite3.Connection) -> li
 
     cursor.execute(
         """
-        SELECT DISTINCT  p.*
+        SELECT p.*
         FROM pokemon AS p
         INNER JOIN (
-            SELECT imc_category, MAX(imc) as max_imc
+            SELECT imc_category, MAX(imc) AS max_imc
             FROM pokemon
             GROUP BY imc_category
-        ) AS max_p on p.imc_category = max_p.imc_category AND p.imc = max_p.max_imc
+        ) AS max_p ON p.imc_category = max_p.imc_category AND p.imc = max_p.max_imc
         """
     )
 
@@ -110,10 +110,10 @@ def query_weakest_pokemon_by_imc_category(connection: sqlite3.Connection) -> lis
         SELECT p.*
         FROM pokemon AS p
         INNER JOIN (
-            SELECT imc_category, MIN(imc) as min_imc
+            SELECT imc_category, MIN(imc) AS min_imc
             FROM pokemon
             GROUP BY imc_category
-        ) AS min_p on p.imc_category = min_p.imc_category AND p.imc = min_p.min_imc
+        ) AS min_p ON p.imc_category = min_p.imc_category AND p.imc = min_p.min_imc
         """
     )
 
@@ -128,7 +128,7 @@ def query_count_by_imc_category(connection: sqlite3.Connection) -> list:
 
     cursor.execute(
         """
-        SELECT imc_category, COUNT(*) as count 
+        SELECT imc_category, COUNT(*) AS count 
         FROM pokemon
         GROUP BY imc_category
         """
@@ -147,13 +147,13 @@ def main() -> None:
     raw_data = fetch_data()
 
     if raw_data is None:
-        print("Pokemon not found")
+        print("Failed to fetch data from API")
         return
 
     data_frame = transform_data(raw_data)
 
     if data_frame is None:
-        print("Data frame is empty")
+        print("Failed to transform data from API")
         return
 
     load_data(data_frame, connection)
